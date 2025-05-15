@@ -1,0 +1,488 @@
+// Edit/Add Class page styles
+.edit-class-container {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 2rem;
+  width: 100%;
+  color: #333;
+}
+
+// Page header
+.page-header {
+  margin-bottom: 2.5rem;
+  
+  .header-content {
+    h1 {
+      font-size: 1.75rem;
+      font-weight: 600;
+      color: #333;
+      margin: 0 0 0.5rem 0;
+    }
+    
+    p {
+      font-size: 0.95rem;
+      color: #666;
+      margin: 0;
+    }
+  }
+}
+
+.form-actions {
+  display: flex;
+  gap: 0.75rem;
+  
+  button {
+    padding: 0.75rem 1.25rem;
+    border-radius: 8px;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    transition: all 0.3s ease;
+  }
+}
+
+// Card styling
+.card {
+  background-color: #fff;
+  border-radius: 12px;
+  margin-bottom: 1.5rem;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
+  border: none;
+  overflow: hidden;
+  
+  .card-header {
+    padding: 1.25rem 1.5rem;
+    background-color: #fff;
+    border-bottom: 1px solid #f0f0f0;
+    
+    h5 {
+      font-size: 1.1rem;
+      font-weight: 600;
+      color: #333;
+      margin: 0;
+    }
+  }
+  
+  .card-body {
+    padding: 1.5rem;
+  }
+}
+
+// Form controls
+.form-label {
+  font-weight: 500;
+  color: #333;
+  margin-bottom: 0.5rem;
+  font-size: 0.9rem;
+}
+
+.form-control, .form-select {
+  padding: 0.75rem 1rem;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+  
+  &:focus {
+    outline: none;
+    border-color: #4361ee;
+    box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.1);
+  }
+}
+
+textarea.form-control {
+  min-height: 120px;
+}
+
+.text-danger {
+  color: #dc3545;
+  font-size: 0.85rem;
+  margin-top: 0.25rem;
+}
+
+// Form sections
+.form-sections {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+.form-section {
+  background-color: #fff;
+  border-radius: 8px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  padding: 1.5rem;
+  
+  h2 {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: #333;
+    margin: 0 0 1.5rem 0;
+    padding-bottom: 0.75rem;
+    border-bottom: 1px solid #f0f0f0;
+  }
+}
+
+// Section header with button
+.section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+  padding-bottom: 0.75rem;
+  border-bottom: 1px solid #f0f0f0;
+  
+  h2 {
+    margin: 0;
+    padding: 0;
+    border: none;
+  }
+}
+
+// Form rows and groups
+.form-row {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1.25rem;
+  margin-bottom: 1.25rem;
+  
+  @media (max-width: 576px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+.form-group {
+  margin-bottom: 1.25rem;
+  
+  &.full-width {
+    grid-column: 1 / -1;
+  }
+  
+  label {
+    display: block;
+    font-size: 0.9rem;
+    font-weight: 500;
+    color: #333;
+    margin-bottom: 0.5rem;
+  }
+  
+  input, select, textarea {
+    width: 100%;
+    padding: 0.65rem 0.75rem;
+    border: 1px solid #e0e0e0;
+    border-radius: 6px;
+    font-size: 0.9rem;
+    color: #333;
+    background-color: #fff;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    
+    &:focus {
+      outline: none;
+      border-color: #4361ee;
+      box-shadow: 0 0 0 2px rgba(67, 97, 238, 0.1);
+    }
+    
+    &:disabled {
+      background-color: #f8f9fa;
+      cursor: not-allowed;
+    }
+  }
+  
+  textarea {
+    resize: vertical;
+    min-height: 80px;
+  }
+}
+
+// Required field indicator
+.required {
+  color: #dc3545;
+}
+
+// Schedule section styling
+.schedule-container {
+  width: 100%;
+}
+
+.empty-message {
+  padding: 1.5rem;
+  text-align: center;
+  color: #6c757d;
+  background-color: #f9f9f9;
+  border-radius: 6px;
+  font-size: 0.9rem;
+}
+
+.schedule-item {
+  margin-bottom: 1rem;
+  
+  &:last-child {
+    margin-bottom: 0;
+  }
+}
+
+.schedule-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr auto;
+  gap: 1rem;
+  align-items: flex-end;
+  background-color: #f9f9f9;
+  border-radius: 6px;
+  padding: 1rem;
+  
+  .form-group {
+    margin-bottom: 0;
+  }
+  
+  @media (max-width: 768px) {
+    grid-template-columns: 1fr 1fr;
+    row-gap: 1rem;
+    
+    .btn-remove {
+      grid-column: 2;
+      justify-self: end;
+    }
+  }
+  
+  @media (max-width: 576px) {
+    grid-template-columns: 1fr;
+    
+    .btn-remove {
+      grid-column: 1;
+      justify-self: end;
+      margin-top: -2.5rem;
+    }
+  }
+}
+
+// Button styling
+.btn {
+  font-weight: 500;
+  border-radius: 8px;
+  padding: 0.75rem 1.25rem;
+  transition: all 0.3s ease;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  cursor: pointer;
+}
+
+.btn-primary {
+  background-color: #4361ee;
+  color: #fff;
+  border: none;
+  
+  &:hover {
+    background-color: #3a56d4;
+  }
+  
+  &:disabled {
+    background-color: #a8b8ff;
+    cursor: not-allowed;
+  }
+}
+
+.btn-outline-secondary {
+  background-color: transparent;
+  color: #666;
+  border: 1px solid #e0e0e0;
+  
+  &:hover {
+    background-color: #f5f5f5;
+    border-color: #d0d0d0;
+  }
+}
+
+.btn-danger {
+  background-color: #dc3545;
+  color: #fff;
+  border: none;
+  
+  &:hover {
+    background-color: #c82333;
+  }
+}
+
+.btn-sm {
+  padding: 0.5rem 0.75rem;
+  font-size: 0.875rem;
+}
+
+// Schedule buttons
+.btn-add {
+  padding: 0.5rem 1rem;
+  background-color: #4361ee;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-size: 0.85rem;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+  
+  &:hover {
+    background-color: #3a56d4;
+  }
+  
+  i {
+    font-size: 0.9rem;
+  }
+}
+
+.btn-remove {
+  background-color: transparent;
+  color: #e53e3e;
+  border: none;
+  width: 36px;
+  height: 36px;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  
+  &:hover {
+    background-color: #fff5f5;
+  }
+  
+  i {
+    font-size: 1rem;
+  }
+}
+
+// Schedule form groups
+.schedule-form-group {
+  flex: 1;
+  min-width: 200px;
+}
+
+.remove-schedule {
+  flex: 0 0 auto;
+}
+
+.add-schedule {
+  margin-top: 0.75rem;
+}
+
+// Loading and error states
+.loading-container {
+  display: flex;
+  justify-content: center;
+  padding: 3rem 0;
+  
+  .spinner-border {
+    width: 3rem;
+    height: 3rem;
+    color: #4361ee;
+  }
+}
+
+.alert-message {
+  padding: 1rem;
+  border-radius: 6px;
+  margin-bottom: 1.5rem;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  font-size: 0.9rem;
+  
+  &.error {
+    background-color: #fff5f5;
+    color: #e53e3e;
+    border: 1px solid #fed7d7;
+  }
+  
+  i {
+    font-size: 1.1rem;
+  }
+}
+
+.error-message {
+  color: #e53e3e;
+  font-size: 0.8rem;
+  margin-top: 0.4rem;
+}
+
+.loading-message {
+  color: #718096;
+  font-size: 0.8rem;
+  margin-top: 0.4rem;
+}
+
+// Alert messages
+.alert {
+  padding: 1.25rem 1.5rem;
+  border-radius: 12px;
+  margin-bottom: 1.5rem;
+  font-size: 0.95rem;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
+}
+
+.alert-danger {
+  background-color: rgba(220, 53, 69, 0.1);
+  border: 1px solid rgba(220, 53, 69, 0.2);
+  color: #dc3545;
+}
+
+// Form validation
+.required-field::after {
+  content: "*";
+  color: #dc3545;
+  margin-left: 0.25rem;
+}
+
+// Form actions
+.form-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 1rem;
+  margin-top: 2rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid #f0f0f0;
+  
+  .btn-cancel {
+    padding: 0.65rem 1.5rem;
+    border: 1px solid #e0e0e0;
+    background-color: #fff;
+    color: #666;
+    border-radius: 6px;
+    font-weight: 500;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    
+    &:hover {
+      background-color: #f5f5f5;
+    }
+  }
+  
+  .btn-save {
+    padding: 0.65rem 1.5rem;
+    border: none;
+    background-color: #4361ee;
+    color: #fff;
+    border-radius: 6px;
+    font-weight: 500;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    
+    &:hover {
+      background-color: #3a56d4;
+    }
+    
+    &:disabled {
+      background-color: #a8b8f8;
+      cursor: not-allowed;
+    }
+  }
+}

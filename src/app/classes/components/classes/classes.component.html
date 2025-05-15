@@ -1,0 +1,249 @@
+<div class="classes-container">
+  <div class="classes-header">
+    <h1>Gym Classes</h1>
+    <button class="btn btn-primary" (click)="addClass()">Add New Classes</button>
+  </div>
+
+  <div class="filters-container">
+    <div class="search-box">
+      <input 
+        type="text" 
+        class="form-control" 
+        placeholder="Search classes..." 
+        [formControl]="searchControl">
+    </div>
+    
+    <div class="filter-controls">
+      <select class="form-select" [formControl]="typeFilter">
+        <option value="">All Types</option>
+        <option *ngFor="let type of classTypes" [value]="type">
+          {{ type }}
+        </option>
+      </select>
+      
+      <select class="form-select" [formControl]="difficultyFilter">
+        <option value="">All Difficulty Levels</option>
+        <option *ngFor="let level of difficultyLevels" [value]="level">
+          {{ level }}
+        </option>
+      </select>
+      
+      <select class="form-select" [formControl]="statusFilter">
+        <option value="">All Statuses</option>
+        <option *ngFor="let status of classStatuses" [value]="status">
+          {{ status }}
+        </option>
+      </select>
+      
+      <button class="btn btn-outline-secondary" (click)="refreshClasses()">
+        <i class="bi bi-arrow-clockwise"></i> Refresh
+      </button>
+    </div>
+  </div>
+
+  <div *ngIf="loading" class="loading-spinner">
+    <div class="spinner-border text-primary" role="status">
+      <span class="visually-hidden">Loading...</span>
+    </div>
+  </div>
+
+  <div *ngIf="error" class="alert alert-danger">
+    Error loading classes. Please try again later.
+  </div>
+
+  <div *ngIf="!loading && !error && filteredClasses.length === 0" class="no-classes">
+    <p>No classes found. Try adjusting your filters or add a new class.</p>
+  </div>
+
+  <div *ngIf="!loading && !error && filteredClasses.length > 0" class="classes-grid">
+    <div *ngFor="let class of filteredClasses" class="class-card" (click)="openClassDetails(class)">
+      <div class="class-image" [style.background-image]="'url(' + (class.imageUrl || 'assets/images/default-class.jpg') + ')'">
+        <div class="class-status" [ngClass]="'status-' + class.status.toLowerCase()">
+          {{ class.status }}
+        </div>
+      </div>
+      
+      <div class="class-content">
+        <h3 class="class-name">{{ class.name }}</h3>
+        
+        <div class="class-meta">
+          <span class="class-type">{{ class.type }}</span>
+          <span class="class-difficulty">{{ class.difficultyLevel }}</span>
+          <span class="class-duration">{{ class.durationMinutes }} min</span>
+        </div>
+        
+        <p class="class-description">{{ class.description.substring(0, 100) }}{{ class.description && class.description.length > 100 ? '...' : '' }}</p>
+        
+        <div class="class-instructor" *ngIf="class.instructor">
+          <img [src]="class.instructor.photoUrl || 'assets/images/default-avatar.jpg'" alt="Instructor" class="instructor-avatar">
+          <span class="instructor-name">{{ class.instructor.name }}</span>
+        </div>
+        
+        <div class="class-enrollment">
+          <div class="enrollment-bar">
+            <div class="enrollment-progress" 
+                [style.width.%]="class.capacity && class.currentEnrollment ? (class.currentEnrollment / class.capacity) * 100 : 0"></div>
+          </div>
+          <span class="enrollment-text">
+            {{ class.currentEnrollment || 0 }}/{{ class.capacity || 'Unlimited' }}
+          </span>
+        </div>
+        
+        <div class="class-actions">
+          <button class="btn btn-sm btn-outline-primary" (click)="editClass(class.id || 0); $event.stopPropagation();">Edit</button>
+          <button class="btn btn-sm btn-outline-danger" (click)="deleteClass(class.id || 0, $event)">Delete</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Class Details Modal -->
+  <div class="modal-overlay" *ngIf="showDetailsModal" (click)="closeDetailsModal()">
+    <div class="modal-content" (click)="preventClose($event)">
+      <div class="modal-header">
+        <h2>Class Details</h2>
+        <button class="btn-close" (click)="closeDetailsModal()">
+          <i class="bi bi-x"></i>
+        </button>
+      </div>
+      
+      <div class="modal-body" *ngIf="selectedClass">
+        <div class="class-profile">
+          <div class="profile-header">
+            <div class="class-image" [style.background-image]="'url(' + (selectedClass.imageUrl || 'assets/images/default-class.jpg') + ')'">
+            </div>
+            <div class="profile-info">
+              <h3>{{ selectedClass.name }}</h3>
+              <div class="profile-badges">
+                <span class="badge badge-type">{{ selectedClass.type }}</span>
+                <span class="badge badge-difficulty">{{ selectedClass.difficultyLevel }}</span>
+                <span class="badge badge-status" [ngClass]="'badge-status ' + selectedClass.status">{{ selectedClass.status }}</span>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Class Details -->
+          <div class="info-section">
+            <h4>Class Details</h4>
+            <div class="info-grid">
+              <div class="info-item">
+                <label>Duration:</label>
+                <p>{{ selectedClass.durationMinutes }} minutes</p>
+              </div>
+              <div class="info-item">
+                <label>Location:</label>
+                <p>{{ selectedClass.location || 'Not specified' }}</p>
+              </div>
+              <div class="info-item">
+                <label>Capacity:</label>
+                <p>{{ selectedClass.capacity || 'Unlimited' }}</p>
+              </div>
+              <div class="info-item">
+                <label>Current Enrollment:</label>
+                <p>{{ selectedClass.currentEnrollment || 0 }}</p>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Enrollment Status -->
+          <div class="info-section" *ngIf="selectedClass.capacity">
+            <h4>Enrollment Status</h4>
+            <div class="enrollment-bar">
+              <div class="enrollment-progress" 
+                  [style.width.%]="selectedClass.capacity && selectedClass.currentEnrollment ? (selectedClass.currentEnrollment / selectedClass.capacity) * 100 : 0"></div>
+            </div>
+            <div class="enrollment-text">
+              {{ selectedClass.currentEnrollment || 0 }} / {{ selectedClass.capacity }} spots filled
+              ({{ selectedClass.capacity && selectedClass.currentEnrollment ? ((selectedClass.currentEnrollment / selectedClass.capacity) * 100).toFixed(0) : 0 }}%)
+            </div>
+          </div>
+          
+          <!-- Class Description -->
+          <div class="info-section">
+            <h4>Description</h4>
+            <p>{{ selectedClass.description }}</p>
+          </div>
+          
+          <!-- Class Schedule -->
+          <div class="info-section" *ngIf="selectedClass.schedules && selectedClass.schedules.length > 0">
+            <h4>Schedule</h4>
+            <div class="schedule-list">
+              <div class="schedule-item" *ngFor="let schedule of selectedClass.schedules">
+                {{ getScheduleDisplay(schedule) }}
+              </div>
+            </div>
+          </div>
+          
+          <!-- Equipment -->
+          <div class="info-section" *ngIf="selectedClass.equipment">
+            <h4>Equipment</h4>
+            <p>{{ selectedClass.equipment }}</p>
+          </div>
+          
+          <!-- Instructor Info -->
+          <div class="info-section" *ngIf="selectedClass.instructor">
+            <h4>Instructor</h4>
+            
+            <div *ngIf="loadingInstructorDetails" class="loading-indicator">
+              <div class="spinner-border spinner-border-sm text-primary me-2" role="status"></div>
+              <span>Loading instructor details...</span>
+            </div>
+            
+            <div class="instructor-section" *ngIf="selectedInstructor && !loadingInstructorDetails">
+              <div class="instructor-header">
+                <div class="instructor-avatar" [style.background-image]="'url(' + (selectedInstructor.photoUrl || 'assets/images/default-avatar.jpg') + ')'">
+                </div>
+                <div class="instructor-info">
+                  <h5>{{ selectedInstructor.name }}</h5>
+                  <p>{{ selectedInstructor.email }}</p>
+                </div>
+              </div>
+              
+              <div class="instructor-details" *ngIf="selectedInstructor.specialties && selectedInstructor.specialties.length > 0">
+                <div class="instructor-detail">
+                  <i class="bi bi-award"></i>
+                  <span><strong>Specialties:</strong> {{ selectedInstructor.specialties.join(', ') }}</span>
+                </div>
+              </div>
+              
+              <div class="instructor-details" *ngIf="selectedInstructor.certifications && selectedInstructor.certifications.length > 0">
+                <div class="instructor-detail">
+                  <i class="bi bi-patch-check"></i>
+                  <span><strong>Certifications:</strong> {{ selectedInstructor.certifications.join(', ') }}</span>
+                </div>
+              </div>
+              
+              <div class="instructor-details" *ngIf="selectedInstructor.bio">
+                <div class="instructor-detail">
+                  <i class="bi bi-person"></i>
+                  <span>{{ selectedInstructor.bio }}</span>
+                </div>
+              </div>
+            </div>
+            
+            <div *ngIf="!selectedInstructor && !loadingInstructorDetails && selectedClass.instructor" class="instructor-section">
+              <div class="instructor-header">
+                <div class="instructor-avatar" [style.background-image]="'url(' + (selectedClass.instructor.photoUrl || 'assets/images/default-avatar.jpg') + ')'">
+                </div>
+                <div class="instructor-info">
+                  <h5>{{ selectedClass.instructor.name }}</h5>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Notes -->
+          <div class="info-section" *ngIf="selectedClass.notes">
+            <h4>Additional Notes</h4>
+            <p>{{ selectedClass.notes }}</p>
+          </div>
+        </div>
+      </div>
+      
+      <div class="modal-footer">
+        <button class="btn btn-outline-secondary" (click)="closeDetailsModal()">Close</button>
+        <button class="btn btn-primary" (click)="editClass(selectedClass?.id || 0); closeDetailsModal();">Edit Class</button>
+      </div>
+    </div>
+  </div>
+</div>

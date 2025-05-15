@@ -1,0 +1,228 @@
+<div class="add-instructor-container">
+  <div class="add-instructor-header">
+    <h1>Add New Instructor</h1>
+    <div class="header-actions">
+      <button class="btn-cancel" (click)="onCancel()">
+        <i class="fas fa-times"></i> Cancel
+      </button>
+      <button class="btn-save" [disabled]="submitting" (click)="onSubmit()">
+        <i class="fas fa-save"></i> Save
+      </button>
+    </div>
+  </div>
+
+  <!-- Loading state -->
+  <div class="loading-overlay" *ngIf="loading">
+    <div class="spinner">
+      <i class="fas fa-circle-notch fa-spin"></i>
+      <span>Loading...</span>
+    </div>
+  </div>
+
+  <!-- Error message -->
+  <div class="error-message" *ngIf="error">
+    <i class="fas fa-exclamation-triangle"></i>
+    <span>{{ error }}</span>
+  </div>
+
+  <!-- Success message -->
+  <div class="success-message" *ngIf="success">
+    <i class="fas fa-check-circle"></i>
+    <span>Instructor successfully added!</span>
+  </div>
+
+  <form [formGroup]="instructorForm" class="instructor-form" (ngSubmit)="onSubmit()">
+    <div class="form-section">
+      <h2>Basic Information</h2>
+      
+      <div class="form-row">
+        <div class="form-group">
+          <label for="instructorId">Instructor ID *</label>
+          <input type="text" id="instructorId" formControlName="instructorId">
+          <div class="validation-feedback">
+            <div class="error-hint" *ngIf="instructorForm.get('instructorId')?.touched && instructorForm.get('instructorId')?.errors?.['required']">
+              Instructor ID is required
+            </div>
+            <div class="error-hint" *ngIf="instructorForm.get('instructorId')?.touched && instructorForm.get('instructorId')?.errors?.['minlength']">
+              Instructor ID must be at least 3 characters
+            </div>
+            <div class="error-hint" *ngIf="instructorForm.get('instructorId')?.touched && instructorForm.get('instructorId')?.errors?.['maxlength']">
+              Instructor ID cannot exceed 10 characters
+            </div>
+            <div class="checking-hint" *ngIf="instructorIdChecking">
+              <i class="fas fa-circle-notch fa-spin"></i> Checking availability...
+            </div>
+            <div class="error-hint" *ngIf="!instructorIdUnique && !instructorIdChecking && instructorForm.get('instructorId')?.valid">
+              This Instructor ID is already in use
+            </div>
+            <div class="success-hint" *ngIf="instructorIdUnique && !instructorIdChecking && instructorForm.get('instructorId')?.valid && instructorForm.get('instructorId')?.value">
+              <i class="fas fa-check"></i> Instructor ID is available
+            </div>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="name">Full Name *</label>
+          <input type="text" id="name" formControlName="name">
+          <div class="validation-feedback">
+            <div class="error-hint" *ngIf="instructorForm.get('name')?.touched && instructorForm.get('name')?.errors?.['required']">
+              Name is required
+            </div>
+            <div class="error-hint" *ngIf="instructorForm.get('name')?.touched && instructorForm.get('name')?.errors?.['minlength']">
+              Name must be at least 2 characters
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label for="email">Email *</label>
+          <input type="email" id="email" formControlName="email">
+          <div class="validation-feedback">
+            <div class="error-hint" *ngIf="instructorForm.get('email')?.touched && instructorForm.get('email')?.errors?.['required']">
+              Email is required
+            </div>
+            <div class="error-hint" *ngIf="instructorForm.get('email')?.touched && instructorForm.get('email')?.errors?.['email']">
+              Please enter a valid email address
+            </div>
+            <div class="checking-hint" *ngIf="emailChecking">
+              <i class="fas fa-circle-notch fa-spin"></i> Checking availability...
+            </div>
+            <div class="error-hint" *ngIf="!emailUnique && !emailChecking && instructorForm.get('email')?.valid">
+              This email is already in use
+            </div>
+            <div class="success-hint" *ngIf="emailUnique && !emailChecking && instructorForm.get('email')?.valid && instructorForm.get('email')?.value">
+              <i class="fas fa-check"></i> Email is available
+            </div>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="phone">Phone *</label>
+          <input type="text" id="phone" formControlName="phone" placeholder="(XXX) XXX-XXXX" (input)="formatPhoneNumber($event)">
+          <div class="validation-feedback">
+            <div class="error-hint" *ngIf="instructorForm.get('phone')?.touched && instructorForm.get('phone')?.errors?.['required']">
+              Phone number is required
+            </div>
+            <div class="error-hint" *ngIf="instructorForm.get('phone')?.touched && instructorForm.get('phone')?.errors?.['pattern']">
+              Phone number format should be (XXX) XXX-XXXX
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label for="status">Status *</label>
+          <select id="status" formControlName="status">
+            <option *ngFor="let status of statusOptions" [value]="status.value">{{ status.label }}</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="hireDate">Hire Date</label>
+          <input type="date" id="hireDate" formControlName="hireDate">
+        </div>
+      </div>
+    </div>
+
+    <div class="form-section">
+      <h2>Professional Information</h2>
+      
+      <div class="form-group">
+        <label>Specialties</label>
+        <div class="tags-container">
+          <div class="tag" *ngFor="let specialty of specialties; let i = index">
+            {{ specialty }}
+            <button type="button" class="tag-remove" (click)="removeSpecialty(i)">
+              <i class="fas fa-times"></i>
+            </button>
+          </div>
+        </div>
+        <div class="tag-input-container">
+          <input type="text" placeholder="Add specialty..." [value]="newSpecialty" (input)="onSpecialtyInput($event)">
+          <button type="button" class="btn-add-tag" (click)="addSpecialty()">
+            <i class="fas fa-plus"></i> Add
+          </button>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label>Certifications</label>
+        <div class="tags-container">
+          <div class="tag" *ngFor="let certification of certifications; let i = index">
+            {{ certification }}
+            <button type="button" class="tag-remove" (click)="removeCertification(i)">
+              <i class="fas fa-times"></i>
+            </button>
+          </div>
+        </div>
+        <div class="tag-input-container">
+          <input type="text" placeholder="Add certification..." [value]="newCertification" (input)="onCertificationInput($event)">
+          <button type="button" class="btn-add-tag" (click)="addCertification()">
+            <i class="fas fa-plus"></i> Add
+          </button>
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label for="hourlyRate">Hourly Rate ($)</label>
+          <input type="number" id="hourlyRate" formControlName="hourlyRate" min="0" step="0.01">
+          <div class="validation-feedback">
+            <div class="error-hint" *ngIf="instructorForm.get('hourlyRate')?.touched && instructorForm.get('hourlyRate')?.errors?.['min']">
+              Hourly rate cannot be negative
+            </div>
+            <div class="error-hint" *ngIf="instructorForm.get('hourlyRate')?.touched && instructorForm.get('hourlyRate')?.errors?.['max']">
+              Hourly rate cannot exceed $1,000
+            </div>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="schedule">Schedule</label>
+          <input type="text" id="schedule" formControlName="schedule" placeholder="e.g., Mon-Fri 9AM-5PM">
+        </div>
+      </div>
+    </div>
+
+    <div class="form-section">
+      <h2>Additional Information</h2>
+      
+      <div class="form-group">
+        <label for="photoUrl">Photo URL</label>
+        <input type="url" id="photoUrl" formControlName="photoUrl" placeholder="https://example.com/photo.jpg">
+      </div>
+
+      <div class="form-group">
+        <label for="bio">Biography</label>
+        <textarea id="bio" formControlName="bio" rows="4" placeholder="Instructor biography..."></textarea>
+        <div class="validation-feedback">
+          <div class="error-hint" *ngIf="instructorForm.get('bio')?.touched && instructorForm.get('bio')?.errors?.['maxlength']">
+            Biography cannot exceed 1000 characters
+          </div>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="notes">Notes</label>
+        <textarea id="notes" formControlName="notes" rows="3" placeholder="Additional notes..."></textarea>
+        <div class="validation-feedback">
+          <div class="error-hint" *ngIf="instructorForm.get('notes')?.touched && instructorForm.get('notes')?.errors?.['maxlength']">
+            Notes cannot exceed 500 characters
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="form-actions">
+      <button type="button" class="btn-cancel" (click)="onCancel()">Cancel</button>
+      <button type="submit" class="btn-primary" [disabled]="submitting || !instructorIdUnique || !emailUnique">
+        <i class="fas fa-save"></i> 
+        <span *ngIf="!submitting">Save Instructor</span>
+        <span *ngIf="submitting">Saving...</span>
+      </button>
+    </div>
+  </form>
+</div>

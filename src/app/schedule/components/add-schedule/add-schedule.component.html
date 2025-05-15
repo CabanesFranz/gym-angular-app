@@ -1,0 +1,147 @@
+<div class="add-schedule-container">
+  <div class="add-schedule-header">
+    <h1>Add Class to Schedule</h1>
+    <div class="header-actions">
+      <button class="btn-cancel" (click)="onCancel()">
+        <i class="fas fa-times"></i> Cancel
+      </button>
+      <button class="btn-save" [disabled]="submitting" (click)="onSubmit()">
+        <i class="fas fa-save"></i> Save
+      </button>
+    </div>
+  </div>
+
+  <!-- Loading state -->
+  <div class="loading-overlay" *ngIf="loading">
+    <div class="spinner">
+      <i class="fas fa-circle-notch fa-spin"></i>
+      <span>Loading...</span>
+    </div>
+  </div>
+
+  <!-- Error message -->
+  <div class="error-message" *ngIf="error">
+    <i class="fas fa-exclamation-triangle"></i>
+    <span>{{ error }}</span>
+  </div>
+
+  <!-- Success message -->
+  <div class="success-message" *ngIf="success">
+    <i class="fas fa-check-circle"></i>
+    <span>Class successfully added to schedule!</span>
+  </div>
+
+  <form [formGroup]="scheduleForm" class="schedule-form" (ngSubmit)="onSubmit()">
+    <div class="form-section">
+      <h2>Class Details</h2>
+      
+      <div class="form-group">
+        <label for="gymClass">Class *</label>
+        <select id="gymClass" formControlName="gymClass" (change)="onClassChange($any($event.target).value)">
+          <option [ngValue]="null">Select a class</option>
+          <option *ngFor="let class of classes" [ngValue]="class">{{ class.name }}</option>
+        </select>
+        <div class="error-hint" *ngIf="scheduleForm.get('gymClass')?.touched && scheduleForm.get('gymClass')?.invalid">
+          Please select a class
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="instructor">Instructor *</label>
+        <select id="instructor" formControlName="instructor">
+          <option [ngValue]="null">Select an instructor</option>
+          <option *ngFor="let instructor of instructors" [ngValue]="instructor">{{ instructor.name }}</option>
+        </select>
+        <div class="error-hint" *ngIf="scheduleForm.get('instructor')?.touched && scheduleForm.get('instructor')?.invalid">
+          Please select an instructor
+        </div>
+      </div>
+    </div>
+
+    <div class="form-section">
+      <h2>Schedule Details</h2>
+      
+      <div class="form-row">
+        <div class="form-group">
+          <label for="dayOfWeek">Day of Week *</label>
+          <select id="dayOfWeek" formControlName="dayOfWeek">
+            <option *ngFor="let day of daysOfWeek" [value]="day.value">{{ day.label }}</option>
+          </select>
+          <div class="error-hint" *ngIf="scheduleForm.get('dayOfWeek')?.touched && scheduleForm.get('dayOfWeek')?.invalid">
+            Please select a day
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="startTime">Start Time *</label>
+          <input type="time" id="startTime" formControlName="startTime">
+          <div class="error-hint" *ngIf="scheduleForm.get('startTime')?.touched && scheduleForm.get('startTime')?.invalid">
+            Please enter a valid start time
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="endTime">End Time *</label>
+          <input type="time" id="endTime" formControlName="endTime">
+          <div class="error-hint" *ngIf="scheduleForm.get('endTime')?.touched && scheduleForm.get('endTime')?.invalid">
+            Please enter a valid end time
+          </div>
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label for="startDate">Start Date</label>
+          <input type="date" id="startDate" formControlName="startDate">
+        </div>
+
+        <div class="form-group">
+          <label for="endDate">End Date</label>
+          <input type="date" id="endDate" formControlName="endDate">
+        </div>
+
+        <div class="form-group">
+          <label for="status">Status</label>
+          <select id="status" formControlName="status">
+            <option *ngFor="let status of statusOptions" [value]="status.value">{{ status.label }}</option>
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <div class="form-section">
+      <h2>Additional Information</h2>
+      
+      <div class="form-row">
+        <div class="form-group">
+          <label for="capacity">Capacity</label>
+          <input type="number" id="capacity" formControlName="capacity" min="1">
+        </div>
+
+        <div class="form-group">
+          <label for="currentEnrollment">Current Enrollment</label>
+          <input type="number" id="currentEnrollment" formControlName="currentEnrollment" min="0">
+        </div>
+
+        <div class="form-group">
+          <label for="location">Location</label>
+          <input type="text" id="location" formControlName="location">
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="notes">Notes</label>
+        <textarea id="notes" formControlName="notes" rows="3"></textarea>
+      </div>
+    </div>
+
+    <div class="form-actions">
+      <button type="button" class="btn-cancel" (click)="onCancel()">Cancel</button>
+      <button type="submit" class="btn-primary" [disabled]="submitting">
+        <i class="fas fa-save"></i> 
+        <span *ngIf="!submitting">Save Schedule</span>
+        <span *ngIf="submitting">Saving...</span>
+      </button>
+    </div>
+  </form>
+</div>

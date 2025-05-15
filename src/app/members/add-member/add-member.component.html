@@ -1,0 +1,345 @@
+<div class="add-member-container" (click)="preventClose($event)">
+  <div class="modal-header">
+    <h2>Add New Member</h2>
+    <button class="btn-close" (click)="onCancel()">
+      <i class="fas fa-times"></i>
+    </button>
+  </div>
+  
+  <div class="modal-body">
+    <form [formGroup]="memberForm" (ngSubmit)="onSubmit()">
+      <div class="form-tabs">
+        <div class="tabs-header">
+          <button type="button" class="tab-btn" [ngClass]="{'active': activeTab === 'personal'}" (click)="setActiveTab('personal')">Personal Info</button>
+          <button type="button" class="tab-btn" [ngClass]="{'active': activeTab === 'health'}" (click)="setActiveTab('health')">Health Metrics</button>
+          <button type="button" class="tab-btn" [ngClass]="{'active': activeTab === 'membership'}" (click)="setActiveTab('membership')">Membership</button>
+          <button type="button" class="tab-btn" [ngClass]="{'active': activeTab === 'emergency'}" (click)="setActiveTab('emergency')">Emergency Contact</button>
+          <button type="button" class="tab-btn" [ngClass]="{'active': activeTab === 'notes'}" (click)="setActiveTab('notes')">Notes</button>
+        </div>
+        
+        <div class="tab-content">
+          <!-- Personal Information Tab -->
+          <div class="tab-pane" *ngIf="activeTab === 'personal'">
+            <div class="info-section">
+              <h4><i class="fas fa-user"></i> Personal Information</h4>
+              
+              <div class="form-group">
+                <label for="name">Full Name</label>
+                <input 
+                  type="text" 
+                  id="name" 
+                  formControlName="name" 
+                  placeholder="Enter full name"
+                  [ngClass]="{'is-invalid': formControls['name'].touched && formControls['name'].invalid}"
+                >
+                <div class="validation-error" *ngIf="formControls['name'].touched && formControls['name'].errors">
+                  <span *ngIf="formControls['name'].errors['required']">Name is required</span>
+                  <span *ngIf="formControls['name'].errors['minlength']">Name must be at least 3 characters</span>
+                </div>
+              </div>
+              
+              <div class="form-group">
+                <label for="email">Email</label>
+                <input 
+                  type="email" 
+                  id="email" 
+                  formControlName="email" 
+                  placeholder="Enter email address"
+                  [ngClass]="{'is-invalid': formControls['email'].touched && formControls['email'].invalid}"
+                >
+                <div class="validation-error" *ngIf="formControls['email'].touched && formControls['email'].errors">
+                  <span *ngIf="formControls['email'].errors['required']">Email is required</span>
+                  <span *ngIf="formControls['email'].errors['email']">Please enter a valid email</span>
+                </div>
+              </div>
+              
+              <div class="form-group">
+                <label for="phone">Phone Number</label>
+                <input 
+                  type="text" 
+                  id="phone" 
+                  formControlName="phone" 
+                  placeholder="(555) 123-4567"
+                  [ngClass]="{'is-invalid': formControls['phone'].touched && formControls['phone'].invalid}"
+                >
+                <div class="validation-error" *ngIf="formControls['phone'].touched && formControls['phone'].errors">
+                  <span *ngIf="formControls['phone'].errors['required']">Phone number is required</span>
+                  <span *ngIf="formControls['phone'].errors['pattern']">Please enter a valid phone number format: (555) 123-4567</span>
+                </div>
+              </div>
+              
+              <div class="form-group">
+                <label for="photoUrl">Photo URL (Optional)</label>
+                <input 
+                  type="text" 
+                  id="photoUrl" 
+                  formControlName="photoUrl" 
+                  placeholder="https://example.com/photo.jpg"
+                >
+              </div>
+            </div>
+          </div>
+          
+          <!-- Health Metrics Tab -->
+          <div class="tab-pane" *ngIf="activeTab === 'health'">
+            <div class="info-section">
+              <h4><i class="fas fa-heartbeat"></i> Health Metrics</h4>
+              
+              <div class="form-row">
+                <div class="form-group">
+                  <label for="height">Height (cm)</label>
+                  <input 
+                    type="number" 
+                    id="height" 
+                    formControlName="height" 
+                    placeholder="Height in cm"
+                  >
+                </div>
+                
+                <div class="form-group">
+                  <label for="weight">Weight (kg)</label>
+                  <input 
+                    type="number" 
+                    id="weight" 
+                    formControlName="weight" 
+                    placeholder="Weight in kg"
+                  >
+                </div>
+              </div>
+              
+              <div class="form-row">
+                <div class="form-group">
+                  <label for="bmi">BMI</label>
+                  <input 
+                    type="number" 
+                    id="bmi" 
+                    formControlName="bmi" 
+                    placeholder="Body Mass Index"
+                    step="0.1"
+                  >
+                </div>
+                
+                <div class="form-group">
+                  <label for="bodyFat">Body Fat (%)</label>
+                  <input 
+                    type="number" 
+                    id="bodyFat" 
+                    formControlName="bodyFat" 
+                    placeholder="Body fat percentage"
+                    step="0.1"
+                  >
+                </div>
+              </div>
+              
+              <div class="form-group">
+                <label>Fitness Goals</label>
+                <div class="checkbox-group">
+                  <div class="checkbox-item">
+                    <input type="checkbox" id="goalWeightLoss" formControlName="goalWeightLoss">
+                    <label for="goalWeightLoss">Weight loss</label>
+                  </div>
+                  <div class="checkbox-item">
+                    <input type="checkbox" id="goalMuscleGain" formControlName="goalMuscleGain">
+                    <label for="goalMuscleGain">Muscle gain</label>
+                  </div>
+                  <div class="checkbox-item">
+                    <input type="checkbox" id="goalEndurance" formControlName="goalEndurance">
+                    <label for="goalEndurance">Endurance</label>
+                  </div>
+                  <div class="checkbox-item">
+                    <input type="checkbox" id="goalFlexibility" formControlName="goalFlexibility">
+                    <label for="goalFlexibility">Flexibility</label>
+                  </div>
+                  <div class="checkbox-item">
+                    <input type="checkbox" id="goalStrength" formControlName="goalStrength">
+                    <label for="goalStrength">Strength</label>
+                  </div>
+                </div>
+              </div>
+              
+              <div class="form-group">
+                <label for="medicalConditions">Medical Conditions (comma separated)</label>
+                <input 
+                  type="text" 
+                  id="medicalConditions" 
+                  formControlName="medicalConditions" 
+                  placeholder="Asthma, Diabetes, etc. or 'None'"
+                >
+              </div>
+            </div>
+          </div>
+          
+          <!-- Membership Tab -->
+          <div class="tab-pane" *ngIf="activeTab === 'membership'">
+            <div class="info-section">
+              <h4><i class="fas fa-id-card"></i> Membership Details</h4>
+              
+              <div class="form-row">
+                <div class="form-group">
+                  <label for="membership">Membership Type</label>
+                  <select 
+                    id="membership" 
+                    formControlName="membership"
+                    [ngClass]="{'is-invalid': formControls['membership'].touched && formControls['membership'].invalid}"
+                  >
+                    <option value="basic">Basic</option>
+                    <option value="standard">Standard</option>
+                    <option value="premium">Premium</option>
+                  </select>
+                  <div class="validation-error" *ngIf="formControls['membership'].touched && formControls['membership'].errors">
+                    <span *ngIf="formControls['membership'].errors['required']">Membership type is required</span>
+                  </div>
+                </div>
+                
+                <div class="form-group">
+                  <label for="status">Status</label>
+                  <select 
+                    id="status" 
+                    formControlName="status"
+                    [ngClass]="{'is-invalid': formControls['status'].touched && formControls['status'].invalid}"
+                  >
+                    <option value="active">Active</option>
+                    <option value="pending">Pending</option>
+                    <option value="inactive">Inactive</option>
+                  </select>
+                  <div class="validation-error" *ngIf="formControls['status'].touched && formControls['status'].errors">
+                    <span *ngIf="formControls['status'].errors['required']">Status is required</span>
+                  </div>
+                </div>
+              </div>
+              
+              <div class="form-group">
+                <label for="paymentMethod">Payment Method</label>
+                <select 
+                  id="paymentMethod" 
+                  formControlName="paymentMethod"
+                >
+                  <option value="Credit Card">Credit Card</option>
+                  <option value="Bank Transfer">Bank Transfer</option>
+                  <option value="Cash">Cash</option>
+                  <option value="Pending">Pending</option>
+                </select>
+              </div>
+              
+              <div class="form-row">
+                <div class="form-group">
+                  <label for="assignedTrainer">Assigned Trainer (Optional)</label>
+                  <input 
+                    type="text" 
+                    id="assignedTrainer" 
+                    formControlName="assignedTrainer" 
+                    placeholder="Trainer name"
+                  >
+                </div>
+                
+                <div class="form-group">
+                  <label for="trainingProgram">Training Program (Optional)</label>
+                  <input 
+                    type="text" 
+                    id="trainingProgram" 
+                    formControlName="trainingProgram" 
+                    placeholder="Program name"
+                  >
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Emergency Contact Tab -->
+          <div class="tab-pane" *ngIf="activeTab === 'emergency'">
+            <div class="info-section">
+              <h4><i class="fas fa-phone-alt"></i> Emergency Contact</h4>
+              
+              <div class="form-group">
+                <label for="emergencyName">Contact Name</label>
+                <input 
+                  type="text" 
+                  id="emergencyName" 
+                  formControlName="emergencyName" 
+                  placeholder="Emergency contact name"
+                >
+              </div>
+              
+              <div class="form-group">
+                <label for="emergencyPhone">Contact Phone</label>
+                <input 
+                  type="text" 
+                  id="emergencyPhone" 
+                  formControlName="emergencyPhone" 
+                  placeholder="(555) 123-4567"
+                >
+              </div>
+              
+              <div class="form-group">
+                <label for="emergencyRelationship">Relationship</label>
+                <input 
+                  type="text" 
+                  id="emergencyRelationship" 
+                  formControlName="emergencyRelationship" 
+                  placeholder="Spouse, Parent, etc."
+                >
+              </div>
+            </div>
+          </div>
+          
+          <!-- Notes Tab -->
+          <div class="tab-pane" *ngIf="activeTab === 'notes'">
+            <div class="info-section">
+              <h4><i class="fas fa-sticky-note"></i> Notes</h4>
+              
+              <div class="form-group">
+                <label for="membershipNotes">Membership Notes</label>
+                <textarea 
+                  id="membershipNotes" 
+                  formControlName="membershipNotes" 
+                  placeholder="Enter membership-related notes"
+                  rows="3"
+                ></textarea>
+              </div>
+              
+              <div class="form-group">
+                <label for="notes">Additional Notes</label>
+                <textarea 
+                  id="notes" 
+                  formControlName="notes" 
+                  placeholder="Enter any additional notes"
+                  rows="3"
+                ></textarea>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <div class="form-navigation">
+        <button type="button" class="btn-outline" [disabled]="activeTab === 'personal'" (click)="previousTab()">
+          <i class="fas fa-chevron-left"></i> Previous
+        </button>
+        <div class="tab-indicators">
+          <span class="tab-indicator" [ngClass]="{'active': activeTab === 'personal'}"></span>
+          <span class="tab-indicator" [ngClass]="{'active': activeTab === 'health'}"></span>
+          <span class="tab-indicator" [ngClass]="{'active': activeTab === 'membership'}"></span>
+          <span class="tab-indicator" [ngClass]="{'active': activeTab === 'emergency'}"></span>
+          <span class="tab-indicator" [ngClass]="{'active': activeTab === 'notes'}"></span>
+        </div>
+        <button type="button" class="btn-outline" *ngIf="activeTab !== 'notes'" (click)="nextTab()">
+          Next <i class="fas fa-chevron-right"></i>
+        </button>
+        <button type="button" class="btn-primary" *ngIf="activeTab === 'notes'" [disabled]="memberForm.invalid || isSubmitting" (click)="onSubmit()">
+          <i class="fas fa-spinner fa-spin" *ngIf="isSubmitting"></i>
+          <span *ngIf="!isSubmitting">Add Member</span>
+          <span *ngIf="isSubmitting">Adding...</span>
+        </button>
+      </div>
+    </form>
+  </div>
+  
+  <div class="modal-footer">
+    <button class="btn-outline" (click)="onCancel()">Cancel</button>
+    <button class="btn-primary" [disabled]="memberForm.invalid || isSubmitting" (click)="onSubmit()">
+      <i class="fas fa-spinner fa-spin" *ngIf="isSubmitting"></i>
+      <span *ngIf="!isSubmitting">Add Member</span>
+      <span *ngIf="isSubmitting">Adding...</span>
+    </button>
+  </div>
+</div>

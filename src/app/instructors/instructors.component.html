@@ -1,0 +1,93 @@
+<div class="instructors-container">
+  <div class="instructors-header">
+    <h1>Instructors</h1>
+    <div class="header-actions">
+      <div class="search-container">
+        <input 
+          type="text" 
+          placeholder="Search instructors..." 
+          class="search-input"
+          (input)="onSearch($event)"
+        >
+        <i class="fas fa-search search-icon"></i>
+      </div>
+      <div class="filter-container">
+        <select class="status-filter" (change)="onStatusChange($event)">
+          <option *ngFor="let option of statusOptions" [value]="option.value">
+            {{ option.label }}
+          </option>
+        </select>
+      </div>
+      <button class="btn-primary" (click)="navigateToAddInstructor()">
+        <i class="fas fa-plus"></i> Add Instructor
+      </button>
+    </div>
+  </div>
+
+  <!-- Loading state -->
+  <div class="loading-overlay" *ngIf="loading">
+    <div class="spinner">
+      <i class="fas fa-circle-notch fa-spin"></i>
+      <span>Loading instructors...</span>
+    </div>
+  </div>
+
+  <!-- Error message -->
+  <div class="error-message" *ngIf="error">
+    <i class="fas fa-exclamation-triangle"></i>
+    <span>{{ error }}</span>
+    <button class="btn-retry" (click)="loadInstructors()">
+      <i class="fas fa-sync-alt"></i> Retry
+    </button>
+  </div>
+
+  <!-- No results message -->
+  <div class="no-results" *ngIf="!loading && !error && filteredInstructors.length === 0">
+    <i class="fas fa-search"></i>
+    <h3>No instructors found</h3>
+    <p *ngIf="searchTerm">No instructors match your search criteria. Try a different search term.</p>
+    <p *ngIf="!searchTerm">There are no instructors in the system yet.</p>
+    <button class="btn-primary" (click)="navigateToAddInstructor()">
+      <i class="fas fa-plus"></i> Add Instructor
+    </button>
+  </div>
+
+  <!-- Instructors table -->
+  <div class="instructors-table-container" *ngIf="!loading && !error && filteredInstructors.length > 0">
+    <table class="instructors-table">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Name</th>
+          <th>Email</th>
+          <th>Phone</th>
+          <th>Status</th>
+          <th>Specialties</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let instructor of filteredInstructors" (click)="viewInstructorDetails(instructor.id!)">
+          <td>{{ instructor.instructorId }}</td>
+          <td>{{ instructor.name }}</td>
+          <td>{{ instructor.email }}</td>
+          <td>{{ instructor.phone }}</td>
+          <td>
+            <span class="status-badge {{ getStatusBadgeClass(instructor.status) }}">
+              {{ instructor.status }}
+            </span>
+          </td>
+          <td>{{ formatSpecialties(instructor.specialties) }}</td>
+          <td class="actions-cell">
+            <button class="btn-icon" (click)="editInstructor(instructor.id!); $event.stopPropagation()">
+              <i class="fas fa-edit"></i>
+            </button>
+            <button class="btn-icon btn-delete" (click)="deleteInstructor(instructor.id!, $event)">
+              <i class="fas fa-trash"></i>
+            </button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>

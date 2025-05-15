@@ -1,0 +1,161 @@
+<div class="schedule-container">
+  <!-- Loading state -->
+  <div class="loading-overlay" *ngIf="loading">
+    <div class="spinner">
+      <i class="fas fa-circle-notch fa-spin"></i>
+      <span>Loading schedule...</span>
+    </div>
+  </div>
+  
+  <!-- Error state -->
+  <div class="error-message" *ngIf="error">
+    <i class="fas fa-exclamation-triangle"></i>
+    <span>Unable to load schedule data. Please try again later.</span>
+    <button class="btn-retry" (click)="loadScheduleData()">
+      <i class="fas fa-sync-alt"></i> Retry
+    </button>
+  </div>
+  <div class="schedule-header">
+    <h1>Schedule</h1>
+    <div class="schedule-actions">
+      <div class="date-navigation">
+        <button class="btn-icon" (click)="previousWeek()">
+          <i class="fas fa-chevron-left"></i>
+        </button>
+        <div class="current-date">
+          <h3>{{ currentWeekDisplay }}</h3>
+          <span>{{ currentMonthYear }}</span>
+        </div>
+        <button class="btn-icon" (click)="nextWeek()">
+          <i class="fas fa-chevron-right"></i>
+        </button>
+      </div>
+      <button class="btn-today" (click)="goToToday()">Today</button>
+      <div class="view-options">
+        <button class="btn-view" [class.active]="currentView === 'week'" (click)="setView('week')">Week</button>
+        <button class="btn-view" [class.active]="currentView === 'day'" (click)="setView('day')">Day</button>
+      </div>
+      <button class="btn-primary" (click)="navigateToAddClass()">
+        <i class="fas fa-plus"></i> Add Class
+      </button>
+    </div>
+  </div>
+
+  <!-- Week View -->
+  <div class="schedule-calendar week-view" *ngIf="currentView === 'week'">
+    <!-- Time column -->
+    <div class="time-column">
+      <div class="time-header">Time</div>
+      <div class="time-slots">
+        <div class="time-slot" *ngFor="let time of timeSlots">
+          <span>{{ time }}</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Day columns -->
+    <div class="day-column" *ngFor="let day of weekDays; let i = index">
+      <div class="day-header" [class.today]="isToday(i)">
+        <span class="day-name">{{ day.name }}</span>
+        <span class="day-date">{{ day.date }}</span>
+      </div>
+      <div class="day-slots">
+        <div class="time-slot" *ngFor="let time of timeSlots; let timeIndex = index">
+          <!-- Classes for this day and time -->
+          <div class="class-item" 
+               *ngFor="let class of getClassesForDayAndTime(i, timeIndex)"
+               [style.height.px]="calculateClassHeight(class)"
+               [style.top.px]="calculateClassPosition(class)"
+               [ngClass]="class.category"
+               (click)="navigateToClassDetails(class.id)">
+            <div class="class-content">
+              <h4>{{ class.title }}</h4>
+              <div class="class-details">
+                <span><i class="fas fa-user"></i> {{ class.instructor }}</span>
+                <span><i class="fas fa-clock"></i> {{ class.startTime }} - {{ class.endTime }}</span>
+                <span><i class="fas fa-users"></i> {{ class.currentAttendees }}/{{ class.capacity }}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Day View -->
+  <div class="schedule-calendar day-view" *ngIf="currentView === 'day'">
+    <div class="day-view-header">
+      <h3>{{ selectedDayDisplay }}</h3>
+      <button class="btn-add-day" (click)="navigateToAddClassForDay(selectedDay.fullDate)">
+        <i class="fas fa-plus"></i> Add Class for {{ selectedDay.name }}
+      </button>
+    </div>
+    <div class="day-view-content">
+      <div class="time-column">
+        <div class="time-header">Time</div>
+        <div class="time-slots">
+          <div class="time-slot" *ngFor="let time of timeSlots">
+            <span>{{ time }}</span>
+          </div>
+        </div>
+      </div>
+      <div class="day-detail-column">
+        <div class="day-header today">
+          <span class="day-name">{{ selectedDay.name }}</span>
+          <span class="day-date">{{ selectedDay.date }}</span>
+        </div>
+        <div class="day-slots">
+          <div class="time-slot" *ngFor="let time of timeSlots; let timeIndex = index">
+            <!-- Classes for this day and time -->
+            <div class="class-item" 
+                 *ngFor="let class of getClassesForSelectedDay(timeIndex)"
+                 [style.height.px]="calculateClassHeight(class)"
+                 [style.top.px]="calculateClassPosition(class)"
+                 [ngClass]="class.category"
+                 (click)="navigateToClassDetails(class.id)">
+              <div class="class-content">
+                <h4>{{ class.title }}</h4>
+                <div class="class-details">
+                  <span><i class="fas fa-user"></i> {{ class.instructor }}</span>
+                  <span><i class="fas fa-clock"></i> {{ class.startTime }} - {{ class.endTime }}</span>
+                  <span><i class="fas fa-users"></i> {{ class.currentAttendees }}/{{ class.capacity }}</span>
+                </div>
+                <div class="class-actions">
+                  <button class="btn-icon"><i class="fas fa-edit"></i></button>
+                  <button class="btn-icon"><i class="fas fa-trash"></i></button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Legend -->
+  <div class="schedule-legend">
+    <h4>Class Types</h4>
+    <div class="legend-items">
+      <div class="legend-item">
+        <span class="legend-color strength"></span>
+        <span class="legend-name">Strength Training</span>
+      </div>
+      <div class="legend-item">
+        <span class="legend-color cardio"></span>
+        <span class="legend-name">Cardio</span>
+      </div>
+      <div class="legend-item">
+        <span class="legend-color yoga"></span>
+        <span class="legend-name">Yoga</span>
+      </div>
+      <div class="legend-item">
+        <span class="legend-color hiit"></span>
+        <span class="legend-name">HIIT</span>
+      </div>
+      <div class="legend-item">
+        <span class="legend-color pilates"></span>
+        <span class="legend-name">Pilates</span>
+      </div>
+    </div>
+  </div>
+</div>

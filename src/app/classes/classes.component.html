@@ -1,0 +1,133 @@
+<div class="classes-container">
+  <div class="classes-header">
+    <h1>Classes</h1>
+    <div class="action-buttons">
+      <button class="btn-primary">
+        <i class="fas fa-plus"></i> Add New Class
+      </button>
+      <div class="filter-dropdown">
+        <button class="btn-secondary" (click)="toggleFilterDropdown()">
+          <i class="fas fa-filter"></i> Filter
+          <i class="fas fa-chevron-down"></i>
+        </button>
+        <div class="dropdown-menu" [class.show]="showFilterDropdown">
+          <div class="dropdown-item">
+            <label>
+              <input type="checkbox" [checked]="showActiveClasses" (change)="toggleActiveClasses($event)"> Active Classes
+            </label>
+          </div>
+          <div class="dropdown-item">
+            <label>
+              <input type="checkbox" [checked]="showInactiveClasses" (change)="toggleInactiveClasses($event)"> Inactive Classes
+            </label>
+          </div>
+          <div class="dropdown-divider"></div>
+          <div class="dropdown-item">
+            <label>Sort by:</label>
+            <select class="sort-select" [value]="sortBy" (change)="changeSortOrder($event)">
+              <option value="title">Class Name</option>
+              <option value="instructor">Instructor</option>
+              <option value="category">Category</option>
+              <option value="capacity">Capacity</option>
+            </select>
+          </div>
+          <div class="dropdown-actions">
+            <button class="btn-sm" (click)="applyFilters()">Apply</button>
+            <button class="btn-sm btn-outline" (click)="resetFilters()">Reset</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="classes-grid">
+    <!-- Class category filters -->
+    <div class="category-filters">
+      <h3>Categories</h3>
+      <ul class="filter-list">
+        <li class="filter-item" [class.active]="selectedCategory === 'all'" (click)="filterByCategory('all')">
+          <span class="category-dot all"></span>
+          <span class="category-name">All Classes</span>
+          <span class="category-count">{{ categoryCounts.all }}</span>
+        </li>
+        <li class="filter-item" [class.active]="selectedCategory === 'strength'" (click)="filterByCategory('strength')">
+          <span class="category-dot strength"></span>
+          <span class="category-name">Strength Training</span>
+          <span class="category-count">{{ categoryCounts.strength }}</span>
+        </li>
+        <li class="filter-item" [class.active]="selectedCategory === 'cardio'" (click)="filterByCategory('cardio')">
+          <span class="category-dot cardio"></span>
+          <span class="category-name">Cardio</span>
+          <span class="category-count">{{ categoryCounts.cardio }}</span>
+        </li>
+        <li class="filter-item" [class.active]="selectedCategory === 'yoga'" (click)="filterByCategory('yoga')">
+          <span class="category-dot yoga"></span>
+          <span class="category-name">Yoga</span>
+          <span class="category-count">{{ categoryCounts.yoga }}</span>
+        </li>
+        <li class="filter-item" [class.active]="selectedCategory === 'hiit'" (click)="filterByCategory('hiit')">
+          <span class="category-dot hiit"></span>
+          <span class="category-name">HIIT</span>
+          <span class="category-count">{{ categoryCounts.hiit }}</span>
+        </li>
+        <li class="filter-item" [class.active]="selectedCategory === 'pilates'" (click)="filterByCategory('pilates')">
+          <span class="category-dot pilates"></span>
+          <span class="category-name">Pilates</span>
+          <span class="category-count">{{ categoryCounts.pilates }}</span>
+        </li>
+      </ul>
+    </div>
+
+    <!-- Class cards grid -->
+    <div class="classes-list">
+      <!-- Class card -->
+      <div *ngFor="let gymClass of filteredClasses" 
+           class="class-card {{ gymClass.category }}"
+           [class.highlighted]="isHighlighted(gymClass.id)"
+           id="class-{{ gymClass.id }}">
+        <div class="class-header">
+          <span class="class-category">{{ gymClass.category | titlecase }}</span>
+          <div class="class-actions">
+            <button class="btn-icon"><i class="fas fa-edit"></i></button>
+            <button class="btn-icon"><i class="fas fa-trash"></i></button>
+          </div>
+        </div>
+        <h3 class="class-title">{{ gymClass.title }}</h3>
+        <div class="class-details">
+          <div class="detail-item">
+            <i class="fas fa-user"></i>
+            <span>{{ gymClass.instructor }}</span>
+          </div>
+          <div class="detail-item">
+            <i class="fas fa-clock"></i>
+            <span>{{ gymClass.duration }} min</span>
+          </div>
+          <div class="detail-item">
+            <i class="fas fa-users"></i>
+            <span>{{ gymClass.capacity }} capacity</span>
+          </div>
+        </div>
+        <div class="class-schedule">
+          <div *ngFor="let schedule of gymClass.schedule" class="schedule-day">
+            <span class="day">{{ schedule.day }}</span>
+            <span class="time">{{ schedule.time }}</span>
+          </div>
+        </div>
+        <div class="class-footer">
+          <span class="class-status" [class.active]="gymClass.status === 'active'" [class.inactive]="gymClass.status === 'inactive'">
+            {{ gymClass.status | titlecase }}
+          </span>
+          <button class="btn-text" (click)="viewClassDetails(gymClass.id)">View Details</button>
+        </div>
+      </div>
+
+      <!-- Empty state when no classes match filters -->
+      <div *ngIf="filteredClasses.length === 0" class="empty-state">
+        <i class="fas fa-search"></i>
+        <h3>No classes found</h3>
+        <p>Try adjusting your filters to see more results</p>
+        <button class="btn-primary" (click)="resetFilters()">Reset Filters</button>
+      </div>
+    </div>
+  </div>
+</div>

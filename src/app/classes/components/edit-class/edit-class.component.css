@@ -1,0 +1,30 @@
+.edit-class-container {
+  padding: 1.5rem;
+}
+
+.edit-class-header {
+  margin-bottom: 1.5rem;
+}
+
+.loading-spinner {
+  display: flex;
+  justify-content: center;
+  padding: 2rem;
+}
+
+.class-form {
+  margin-bottom: 2rem;
+}
+
+.form-actions {
+  margin-top: 2rem;
+}
+
+.schedule-item {
+  background-color: #f8f9fa;
+  transition: background-color 0.2s;
+}
+
+.schedule-item:hover {
+  background-color: #f0f0f0;
+}

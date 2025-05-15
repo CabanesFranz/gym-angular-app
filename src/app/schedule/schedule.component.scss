@@ -1,0 +1,660 @@
+// Schedule page styles
+.schedule-container {
+  position: relative;
+  padding: 1.5rem;
+  width: 100%;
+}
+
+// Loading overlay
+.loading-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(255, 255, 255, 0.8);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 10;
+  backdrop-filter: blur(2px);
+  border-radius: 12px;
+  
+  .spinner {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+    padding: 2rem;
+    background-color: white;
+    border-radius: 12px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+    
+    i {
+      font-size: 2rem;
+      color: #4361ee;
+    }
+    
+    span {
+      font-weight: 500;
+      color: #333;
+    }
+  }
+}
+
+// Error message
+.error-message {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+  padding: 2rem;
+  margin: 1rem 0;
+  background-color: #fff4f4;
+  border: 1px solid #ffcdd2;
+  border-radius: 12px;
+  
+  i {
+    font-size: 2rem;
+    color: #f44336;
+  }
+  
+  span {
+    font-weight: 500;
+    color: #333;
+  }
+  
+  .btn-retry {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.6rem 1.2rem;
+    border-radius: 8px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    border: none;
+    font-size: 0.9rem;
+    background-color: #f44336;
+    color: white;
+    margin-top: 0.5rem;
+    
+    &:hover {
+      background-color: #e53935;
+      transform: translateY(-2px);
+    }
+  }
+}
+
+// Schedule header
+.schedule-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+  background-color: #fff;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  padding: 1.5rem;
+
+  h1 {
+    font-size: 1.8rem;
+    font-weight: 600;
+    color: #333;
+    margin: 0;
+  }
+
+  .schedule-actions {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+
+    .date-navigation {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      
+      .btn-icon {
+        width: 36px;
+        height: 36px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: none;
+        border: 1px solid #e0e0e0;
+        color: #666;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        
+        &:hover {
+          background-color: #f5f5f5;
+          transform: translateY(-2px);
+        }
+      }
+      
+      .current-date {
+        text-align: center;
+        min-width: 150px;
+        
+        h3 {
+          margin: 0;
+          font-size: 1rem;
+          font-weight: 600;
+          color: #333;
+        }
+        
+        span {
+          font-size: 0.8rem;
+          color: #666;
+        }
+      }
+    }
+    
+    .btn-today {
+      padding: 0.5rem 1rem;
+      border-radius: 8px;
+      background-color: #f9f9f9;
+      border: 1px solid #e0e0e0;
+      color: #333;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      
+      &:hover {
+        background-color: #f0f0f0;
+        transform: translateY(-2px);
+      }
+    }
+    
+    .view-options {
+      display: flex;
+      border: 1px solid #e0e0e0;
+      border-radius: 8px;
+      overflow: hidden;
+      
+      .btn-view {
+        padding: 0.5rem 1rem;
+        background: none;
+        border: none;
+        color: #666;
+        font-weight: 500;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+        
+        &:not(:last-child) {
+          border-right: 1px solid #e0e0e0;
+        }
+        
+        &:hover {
+          background-color: #f5f5f5;
+        }
+        
+        &.active {
+          background-color: #4361ee;
+          color: white;
+        }
+      }
+    }
+    
+    .btn-primary {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.6rem 1.2rem;
+      border-radius: 8px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      border: none;
+      font-size: 0.9rem;
+      background-color: #4361ee;
+      color: white;
+
+      i {
+        font-size: 0.9rem;
+      }
+
+      &:hover {
+        background-color: #3a56d4;
+        transform: translateY(-2px);
+      }
+    }
+  }
+}
+
+// Schedule calendar
+.schedule-calendar {
+  background-color: #fff;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  overflow: hidden;
+  margin-bottom: 1.5rem;
+  
+  // Week view
+  &.week-view {
+    display: grid;
+    grid-template-columns: 80px repeat(7, 1fr);
+    min-height: 600px;
+    
+    .time-column {
+      border-right: 1px solid #f0f0f0;
+      
+      .time-header {
+        height: 60px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 600;
+        color: #333;
+        border-bottom: 1px solid #f0f0f0;
+      }
+      
+      .time-slots {
+        .time-slot {
+          height: 60px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          color: #666;
+          font-size: 0.8rem;
+          border-bottom: 1px solid #f0f0f0;
+        }
+      }
+    }
+    
+    .day-column {
+      position: relative;
+      
+      .day-header {
+        height: 60px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        border-bottom: 1px solid #f0f0f0;
+        
+        &.today {
+          background-color: rgba(67, 97, 238, 0.1);
+          
+          .day-name, .day-date {
+            color: #4361ee;
+            font-weight: 600;
+          }
+        }
+        
+        .day-name {
+          font-weight: 600;
+          color: #333;
+        }
+        
+        .day-date {
+          font-size: 0.8rem;
+          color: #666;
+        }
+      }
+      
+      .day-slots {
+        position: relative;
+        
+        .time-slot {
+          height: 60px;
+          border-bottom: 1px solid #f0f0f0;
+          border-right: 1px solid #f0f0f0;
+          position: relative;
+        }
+      }
+    }
+  }
+  
+  // Day view
+  &.day-view {
+    .day-view-header {
+      padding: 1rem;
+      border-bottom: 1px solid #f0f0f0;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      
+      h3 {
+        margin: 0;
+        font-weight: 600;
+        color: #333;
+      }
+      
+      .btn-add-day {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.6rem 1.2rem;
+        border-radius: 8px;
+        font-weight: 500;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        border: none;
+        font-size: 0.9rem;
+        background-color: #4361ee;
+        color: white;
+        
+        i {
+          font-size: 0.9rem;
+        }
+        
+        &:hover {
+          background-color: #3a56d4;
+          transform: translateY(-2px);
+        }
+      }
+    }
+    
+    .day-view-content {
+      display: grid;
+      grid-template-columns: 80px 1fr;
+      min-height: 600px;
+      
+      .time-column {
+        border-right: 1px solid #f0f0f0;
+        
+        .time-header {
+          height: 60px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          font-weight: 600;
+          color: #333;
+          border-bottom: 1px solid #f0f0f0;
+        }
+        
+        .time-slots {
+          .time-slot {
+            height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #666;
+            font-size: 0.8rem;
+            border-bottom: 1px solid #f0f0f0;
+          }
+        }
+      }
+      
+      .day-detail-column {
+        position: relative;
+        
+        .day-header {
+          height: 60px;
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          justify-content: center;
+          border-bottom: 1px solid #f0f0f0;
+          
+          &.today {
+            background-color: rgba(67, 97, 238, 0.1);
+            
+            .day-name, .day-date {
+              color: #4361ee;
+              font-weight: 600;
+            }
+          }
+          
+          .day-name {
+            font-weight: 600;
+            color: #333;
+          }
+          
+          .day-date {
+            font-size: 0.8rem;
+            color: #666;
+          }
+        }
+        
+        .day-slots {
+          position: relative;
+          
+          .time-slot {
+            height: 60px;
+            border-bottom: 1px solid #f0f0f0;
+            position: relative;
+          }
+        }
+      }
+    }
+  }
+  
+  // Class items
+  .class-item {
+    position: absolute;
+    left: 4px;
+    right: 4px;
+    min-height: 30px;
+    border-radius: 6px;
+    padding: 0.5rem;
+    overflow: hidden;
+    cursor: pointer;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    z-index: 10;
+    
+    &:hover {
+      transform: scale(1.02);
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      z-index: 20;
+    }
+    
+    &:active {
+      transform: scale(0.98);
+    }
+    
+    &::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-color: rgba(255, 255, 255, 0);
+      transition: background-color 0.3s ease;
+    }
+    
+    &:hover::after {
+      background-color: rgba(255, 255, 255, 0.1);
+    }
+    
+    &.strength {
+      background-color: rgba(67, 97, 238, 0.2);
+      border-left: 4px solid #4361ee;
+    }
+    
+    &.cardio {
+      background-color: rgba(58, 134, 255, 0.2);
+      border-left: 4px solid #3a86ff;
+    }
+    
+    &.yoga {
+      background-color: rgba(56, 176, 0, 0.2);
+      border-left: 4px solid #38b000;
+    }
+    
+    &.hiit {
+      background-color: rgba(255, 159, 28, 0.2);
+      border-left: 4px solid #ff9f1c;
+    }
+    
+    &.pilates {
+      background-color: rgba(230, 57, 70, 0.2);
+      border-left: 4px solid #e63946;
+    }
+    
+    .class-content {
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      
+      h4 {
+        margin: 0 0 0.3rem 0;
+        font-size: 0.9rem;
+        font-weight: 600;
+        color: #333;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+      
+      .class-details {
+        display: flex;
+        flex-direction: column;
+        gap: 0.2rem;
+        font-size: 0.75rem;
+        color: #666;
+        
+        span {
+          display: flex;
+          align-items: center;
+          gap: 0.3rem;
+          
+          i {
+            width: 12px;
+          }
+        }
+      }
+      
+      .class-actions {
+        margin-top: auto;
+        display: flex;
+        justify-content: flex-end;
+        gap: 0.3rem;
+        
+        .btn-icon {
+          width: 24px;
+          height: 24px;
+          border-radius: 50%;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          background: none;
+          border: none;
+          color: #666;
+          cursor: pointer;
+          transition: background-color 0.3s ease;
+          
+          &:hover {
+            background-color: rgba(255, 255, 255, 0.5);
+          }
+        }
+      }
+    }
+  }
+}
+
+// Schedule legend
+.schedule-legend {
+  background-color: #fff;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  padding: 1.5rem;
+  
+  h4 {
+    margin: 0 0 1rem 0;
+    font-size: 1rem;
+    font-weight: 600;
+    color: #333;
+  }
+  
+  .legend-items {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      
+      .legend-color {
+        width: 16px;
+        height: 16px;
+        border-radius: 4px;
+        
+        &.strength {
+          background-color: #4361ee;
+        }
+        
+        &.cardio {
+          background-color: #3a86ff;
+        }
+        
+        &.yoga {
+          background-color: #38b000;
+        }
+        
+        &.hiit {
+          background-color: #ff9f1c;
+        }
+        
+        &.pilates {
+          background-color: #e63946;
+        }
+      }
+      
+      .legend-name {
+        font-size: 0.9rem;
+        color: #666;
+      }
+    }
+  }
+}
+
+// Responsive styles
+@media (max-width: 1200px) {
+  .schedule-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+    
+    .schedule-actions {
+      width: 100%;
+      flex-wrap: wrap;
+    }
+  }
+}
+
+@media (max-width: 768px) {
+  .schedule-calendar {
+    &.week-view {
+      grid-template-columns: 60px repeat(7, 1fr);
+      
+      .day-column {
+        .day-header {
+          .day-name {
+            font-size: 0.8rem;
+          }
+          
+          .day-date {
+            font-size: 0.7rem;
+          }
+        }
+      }
+    }
+    
+    .class-item {
+      .class-content {
+        h4 {
+          font-size: 0.8rem;
+        }
+        
+        .class-details {
+          font-size: 0.7rem;
+        }
+      }
+    }
+  }
+}
+
+@media (max-width: 576px) {
+  .schedule-calendar {
+    &.week-view {
+      overflow-x: auto;
+      min-width: 800px;
+    }
+  }
+}

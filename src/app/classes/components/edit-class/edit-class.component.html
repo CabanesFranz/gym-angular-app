@@ -1,0 +1,184 @@
+<div class="edit-class-container">
+  <div class="page-header">
+    <div class="header-content">
+      <h1>{{ isNewClass ? 'Add New Class' : 'Edit Class' }}</h1>
+      <p>{{ isNewClass ? 'Create a new class for your gym members' : 'Update the details of this class' }}</p>
+    </div>
+  </div>
+
+  <div *ngIf="loading" class="loading-container">
+    <div class="spinner-border" role="status">
+      <span class="visually-hidden">Loading...</span>
+    </div>
+  </div>
+
+  <div *ngIf="error" class="alert-message error">
+    <i class="bi bi-exclamation-circle"></i>
+    <span>{{ errorMessage }}</span>
+  </div>
+
+  <form *ngIf="!loading" [formGroup]="classForm" (ngSubmit)="onSubmit()" class="class-form">
+    <div class="form-sections">
+      <!-- Main Information Section -->
+      <section class="form-section">
+        <h2>Class Information</h2>
+        
+        <div class="form-row">
+          <div class="form-group">
+            <label for="name">Class Name <span class="required">*</span></label>
+            <input type="text" id="name" formControlName="name" placeholder="Enter class name">
+            <div *ngIf="classForm.get('name')?.invalid && classForm.get('name')?.touched" class="error-message">
+              Name is required
+            </div>
+          </div>
+          
+          <div class="form-group">
+            <label for="type">Type <span class="required">*</span></label>
+            <select id="type" formControlName="type">
+              <option *ngFor="let type of classTypes" [value]="type">{{ type }}</option>
+            </select>
+          </div>
+        </div>
+        
+        <div class="form-row">
+          <div class="form-group">
+            <label for="difficultyLevel">Difficulty <span class="required">*</span></label>
+            <select id="difficultyLevel" formControlName="difficultyLevel">
+              <option *ngFor="let level of difficultyLevels" [value]="level">{{ level }}</option>
+            </select>
+          </div>
+          
+          <div class="form-group">
+            <label for="status">Status <span class="required">*</span></label>
+            <select id="status" formControlName="status">
+              <option *ngFor="let status of classStatuses" [value]="status">{{ status }}</option>
+            </select>
+          </div>
+        </div>
+        
+        <div class="form-row">
+          <div class="form-group">
+            <label for="durationMinutes">Duration (minutes) <span class="required">*</span></label>
+            <input type="number" id="durationMinutes" formControlName="durationMinutes" min="5" max="240">
+            <div *ngIf="classForm.get('durationMinutes')?.invalid && classForm.get('durationMinutes')?.touched" class="error-message">
+              Duration must be between 5 and 240 minutes
+            </div>
+          </div>
+          
+          <div class="form-group">
+            <label for="location">Location</label>
+            <input type="text" id="location" formControlName="location" placeholder="Where the class will be held">
+          </div>
+        </div>
+        
+        <div class="form-group full-width">
+          <label for="description">Description <span class="required">*</span></label>
+          <textarea id="description" rows="3" formControlName="description" placeholder="Enter class description"></textarea>
+          <div *ngIf="classForm.get('description')?.invalid && classForm.get('description')?.touched" class="error-message">
+            Description is required
+          </div>
+        </div>
+      </section>
+      
+      <!-- Schedule Section -->
+      <section class="form-section">
+        <div class="section-header">
+          <h2>Schedule</h2>
+          <button type="button" class="btn-add" (click)="addSchedule()">
+            <i class="bi bi-plus"></i> Add Time Slot
+          </button>
+        </div>
+        
+        <div formArrayName="schedules" class="schedule-container">
+          <div *ngIf="schedules.controls.length === 0" class="empty-message">
+            No schedule times added yet
+          </div>
+          
+          <div *ngFor="let schedule of schedules.controls; let i = index" [formGroupName]="i" class="schedule-item">
+            <div class="schedule-row">
+              <div class="form-group">
+                <label>Day</label>
+                <select formControlName="dayOfWeek">
+                  <option *ngFor="let day of daysOfWeek" [value]="day">{{ day }}</option>
+                </select>
+              </div>
+              
+              <div class="form-group">
+                <label>Start Time</label>
+                <input type="time" formControlName="startTime">
+              </div>
+              
+              <div class="form-group">
+                <label>End Time</label>
+                <input type="time" formControlName="endTime">
+              </div>
+              
+              <button type="button" class="btn-remove" (click)="removeSchedule(i)">
+                <i class="bi bi-trash"></i>
+              </button>
+            </div>
+          </div>
+        </div>
+      </section>
+      
+      <!-- Additional Details Section -->
+      <section class="form-section">
+        <h2>Additional Details</h2>
+        
+        <div class="form-row">
+          <div class="form-group">
+            <label for="capacity">Capacity</label>
+            <input type="number" id="capacity" formControlName="capacity" min="1" max="100">
+          </div>
+          
+          <div class="form-group">
+            <label for="currentEnrollment">Current Enrollment</label>
+            <input type="number" id="currentEnrollment" formControlName="currentEnrollment" min="0">
+          </div>
+        </div>
+        
+        <div class="form-row">
+          <div class="form-group">
+            <label for="instructorId">Instructor</label>
+            <select id="instructorId" formControlName="instructorId">
+              <option [value]="null">-- Select Instructor --</option>
+              <option *ngFor="let instructor of instructors" [value]="instructor.id">{{ instructor.name }}</option>
+            </select>
+            <div *ngIf="loadingInstructors" class="loading-message">
+              Loading instructors...
+            </div>
+          </div>
+          
+          <div class="form-group">
+            <label for="imageUrl">Image URL</label>
+            <input type="text" id="imageUrl" formControlName="imageUrl">
+          </div>
+        </div>
+        
+        <div class="form-row">
+          <div class="form-group">
+            <label for="equipment">Equipment</label>
+            <input type="text" id="equipment" formControlName="equipment">
+          </div>
+          
+          <div class="form-group">
+            <label for="notes">Notes</label>
+            <textarea id="notes" rows="2" formControlName="notes"></textarea>
+          </div>
+        </div>
+      </section>
+    </div>
+
+
+
+    <!-- Form Actions -->
+    <div class="form-actions">
+      <button type="button" class="btn-cancel" (click)="cancel()">
+        Cancel
+      </button>
+      <button type="submit" class="btn-save" [disabled]="saving || classForm.invalid">
+        {{ saving ? 'Saving...' : 'Save Class' }}
+      </button>
+    </div>
+  </form>
+</div>

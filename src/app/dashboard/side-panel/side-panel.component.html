@@ -1,0 +1,47 @@
+<aside class="side-panel" [class.hidden]="!(isOpen$ | async)">
+  <div class="panel-toggle" 
+       [class.collapsed]="!(isOpen$ | async)" 
+       (click)="toggleSidePanel()">
+    <div class="toggle-icon"></div>
+  </div>
+  <nav class="side-nav">
+    <ul>
+      <li>
+        <a routerLink="/dashboard" routerLinkActive="active">
+          <i class="icon-dashboard"></i>
+          <span>Dashboard</span>
+        </a>
+      </li>
+      <li>
+        <a routerLink="/members" routerLinkActive="active">
+          <i class="icon-members"></i>
+          <span>Members</span>
+        </a>
+      </li>
+      <li>
+        <a routerLink="/classes" routerLinkActive="active">
+          <i class="icon-classes"></i>
+          <span>Classes</span>
+        </a>
+      </li>
+      <li>
+        <a routerLink="/schedule" routerLinkActive="active">
+          <i class="icon-schedule"></i>
+          <span>Schedule</span>
+        </a>
+      </li>
+      <li>
+        <a routerLink="/instructors" routerLinkActive="active">
+          <i class="icon-user"></i>
+          <span>Instructors</span>
+        </a>
+      </li>
+      <li>
+        <a routerLink="/reports" routerLinkActive="active">
+          <i class="icon-reports"></i>
+          <span>Reports</span>
+        </a>
+      </li>
+    </ul>
+  </nav>
+</aside>

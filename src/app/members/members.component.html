@@ -1,0 +1,379 @@
+<div class="members-container">
+  <div class="page-header">
+    <div class="header-content">
+      <h1>Members</h1>
+      <p>Manage your gym members</p>
+    </div>
+    <div class="header-actions">
+      <div class="search-box">
+        <i class="fas fa-search"></i>
+        <input type="text" placeholder="Search members..." [(ngModel)]="searchTerm" (input)="applyFilters()">
+      </div>
+      <button class="btn-primary" (click)="openAddMemberModal()">
+        <i class="fas fa-plus"></i> Add Member
+      </button>
+    </div>
+  </div>
+
+  <div class="filter-bar">
+    <div class="filter-group">
+      <label>Status:</label>
+      <select [(ngModel)]="statusFilter" (change)="applyFilters()">
+        <option value="all">All</option>
+        <option value="ACTIVE">Active</option>
+        <option value="INACTIVE">Inactive</option>
+        <option value="PENDING">Pending</option>
+      </select>
+    </div>
+    <div class="filter-group">
+      <label>Membership:</label>
+      <select [(ngModel)]="membershipFilter" (change)="applyFilters()">
+        <option value="all">All</option>
+        <option value="PREMIUM">Premium</option>
+        <option value="STANDARD">Standard</option>
+        <option value="BASIC">Basic</option>
+      </select>
+    </div>
+    <div class="filter-group">
+      <label>Sort By:</label>
+      <select [(ngModel)]="sortOption" (change)="applyFilters()">
+        <option value="nameAsc">Name (A-Z)</option>
+        <option value="nameDesc">Name (Z-A)</option>
+        <option value="newest">Newest First</option>
+        <option value="oldest">Oldest First</option>
+      </select>
+    </div>
+    <button class="btn-outline" (click)="resetFilters()">
+      <i class="fas fa-redo"></i> Reset
+    </button>
+  </div>
+
+  <div class="members-grid">
+    <div class="member-card" *ngFor="let member of filteredMembers" (click)="openMemberDetails(member)">
+      <div class="member-header">
+        <div class="member-avatar">
+          <div class="avatar-placeholder" *ngIf="!member.photoUrl">
+            {{ member.initials }}
+          </div>
+          <img *ngIf="member.photoUrl" [src]="member.photoUrl" [alt]="member.name">
+        </div>
+        <div class="member-status" [ngClass]="member.status">
+          {{ member.status }}
+        </div>
+      </div>
+      <div class="member-details">
+        <h3>{{ member.name }}</h3>
+        <p class="member-id">ID: {{ member.id }}</p>
+        <div class="member-info-row">
+          <i class="fas fa-envelope"></i>
+          <span>{{ member.email }}</span>
+        </div>
+        <div class="member-info-row">
+          <i class="fas fa-phone"></i>
+          <span>{{ member.phone }}</span>
+        </div>
+        <div class="member-info-row">
+          <i class="fas fa-calendar-alt"></i>
+          <span>Joined: {{ member.joinDate | date:'mediumDate' }}</span>
+        </div>
+        <div class="member-info-row">
+          <i class="fas fa-clock"></i>
+          <span>Last Visit: {{ member.lastVisit ? (member.lastVisit | date:'mediumDate') : 'Never' }}</span>
+        </div>
+      </div>
+      <div class="member-plan">
+        <span class="plan-badge" [ngClass]="member.membership">{{ member.membership }}</span>
+        <p class="plan-expiry">Expires: {{ member.expiryDate | date:'mediumDate' }}</p>
+      </div>
+      <div class="member-actions">
+        <button class="btn-icon" title="Edit Member" (click)="$event.stopPropagation()">
+          <i class="fas fa-edit"></i>
+        </button>
+        <button class="btn-icon" title="View Details" (click)="$event.stopPropagation()">
+          <i class="fas fa-eye"></i>
+        </button>
+        <button class="btn-icon" title="Check In" (click)="$event.stopPropagation()">
+          <i class="fas fa-check-circle"></i>
+        </button>
+        <button class="btn-icon" title="More Options" (click)="$event.stopPropagation()">
+          <i class="fas fa-ellipsis-v"></i>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div class="empty-state" *ngIf="filteredMembers.length === 0">
+    <div class="empty-icon">
+      <i class="fas fa-users-slash"></i>
+    </div>
+    <h3>No members found</h3>
+    <p>Try adjusting your search or filters</p>
+    <button class="btn-primary" (click)="resetFilters()">Reset Filters</button>
+  </div>
+
+  <div class="pagination">
+    <button class="btn-page" [disabled]="currentPage === 1" (click)="changePage(currentPage - 1)">
+      <i class="fas fa-chevron-left"></i>
+    </button>
+    <div class="page-info">
+      Page {{ currentPage }} of {{ totalPages }}
+    </div>
+    <button class="btn-page" [disabled]="currentPage === totalPages" (click)="changePage(currentPage + 1)">
+      <i class="fas fa-chevron-right"></i>
+    </button>
+  </div>
+
+  <!-- Member Details Modal -->
+  <div class="modal-overlay" *ngIf="showModal" (click)="closeModal()">
+    <div class="modal-content" (click)="preventClose($event)">
+      <div class="modal-header">
+        <h2>Member Details</h2>
+        <button class="btn-close" (click)="closeModal()">
+          <i class="fas fa-times"></i>
+        </button>
+      </div>
+      
+      <div class="modal-body" *ngIf="selectedMember">
+        <div class="member-profile">
+          <div class="profile-header">
+            <div class="profile-avatar">
+              <div class="avatar-placeholder" *ngIf="!selectedMember.photoUrl">
+                {{ selectedMember.initials }}
+              </div>
+              <img *ngIf="selectedMember.photoUrl" [src]="selectedMember.photoUrl" [alt]="selectedMember.name">
+            </div>
+            <div class="profile-info">
+              <h3>{{ selectedMember.name }}</h3>
+              <p class="member-id">ID: {{ selectedMember.id }}</p>
+              <div class="profile-badges">
+                <span class="status-badge" [ngClass]="selectedMember.status">{{ selectedMember.status }}</span>
+                <span class="plan-badge" [ngClass]="selectedMember.membership">{{ selectedMember.membership }}</span>
+              </div>
+            </div>
+          </div>
+          
+          <div class="profile-tabs">
+            <div class="tabs-header">
+              <button class="tab-btn" [ngClass]="{'active': activeDetailTab === 'overview'}" (click)="setActiveDetailTab('overview')">Overview</button>
+              <button class="tab-btn" [ngClass]="{'active': activeDetailTab === 'health'}" (click)="setActiveDetailTab('health')">Health Metrics</button>
+              <button class="tab-btn" [ngClass]="{'active': activeDetailTab === 'membership'}" (click)="setActiveDetailTab('membership')">Membership</button>
+              <button class="tab-btn" [ngClass]="{'active': activeDetailTab === 'emergency'}" (click)="setActiveDetailTab('emergency')">Emergency Contact</button>
+              <button class="tab-btn" [ngClass]="{'active': activeDetailTab === 'notes'}" (click)="setActiveDetailTab('notes')">Notes</button>
+            </div>
+            
+            <div class="tab-content">
+              <!-- Overview Tab Content -->
+              <div *ngIf="activeDetailTab === 'overview'">
+                <!-- Personal Information -->
+                <div class="info-section">
+                  <h4><i class="fas fa-user"></i> Personal Information</h4>
+                  <div class="info-grid">
+                    <div class="info-item">
+                      <label>Email:</label>
+                      <p>{{ selectedMember.email }}</p>
+                    </div>
+                    <div class="info-item">
+                      <label>Phone:</label>
+                      <p>{{ selectedMember.phone }}</p>
+                    </div>
+                    <div class="info-item">
+                      <label>Join Date:</label>
+                      <p>{{ selectedMember.joinDate | date:'longDate' }}</p>
+                    </div>
+                    <div class="info-item">
+                      <label>Last Visit:</label>
+                      <p>{{ selectedMember.lastVisit ? (selectedMember.lastVisit | date:'longDate') : 'Never' }}</p>
+                    </div>
+                  </div>
+                </div>
+                
+                <!-- Basic Membership Info -->
+                <div class="info-section">
+                  <h4><i class="fas fa-id-card"></i> Basic Membership</h4>
+                  <div class="info-grid">
+                    <div class="info-item">
+                      <label>Membership Type:</label>
+                      <p><span class="plan-badge small" [ngClass]="selectedMember.membership">{{ selectedMember.membership }}</span></p>
+                    </div>
+                    <div class="info-item">
+                      <label>Status:</label>
+                      <p><span class="status-badge small" [ngClass]="selectedMember.status">{{ selectedMember.status }}</span></p>
+                    </div>
+                  </div>
+                </div>
+                
+                <!-- Training Info (Overview) -->
+                <div class="info-section" *ngIf="selectedMember.assignedTrainer || selectedMember.trainingProgram">
+                  <h4><i class="fas fa-dumbbell"></i> Training</h4>
+                  <div class="info-grid">
+                    <div class="info-item" *ngIf="selectedMember.assignedTrainer">
+                      <label>Assigned Trainer:</label>
+                      <p>{{ selectedMember.assignedTrainer }}</p>
+                    </div>
+                    <div class="info-item" *ngIf="selectedMember.trainingProgram">
+                      <label>Training Program:</label>
+                      <p>{{ selectedMember.trainingProgram }}</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              
+              <!-- Health Metrics Tab Content -->
+              <div *ngIf="activeDetailTab === 'health'">
+                <div class="info-section">
+                  <h4><i class="fas fa-heartbeat"></i> Health Metrics</h4>
+                  <div class="info-grid">
+                    <div class="info-item">
+                      <label>Height:</label>
+                      <p>{{ selectedMember.height ?? 'Not recorded' }} {{ selectedMember.height ? 'cm' : '' }}</p>
+                    </div>
+                    <div class="info-item">
+                      <label>Weight:</label>
+                      <p>{{ selectedMember.weight ?? 'Not recorded' }} {{ selectedMember.weight ? 'kg' : '' }}</p>
+                    </div>
+                    <div class="info-item">
+                      <label>BMI:</label>
+                      <p>{{ selectedMember.bmi ?? 'Not recorded' }}</p>
+                    </div>
+                    <div class="info-item">
+                      <label>Body Fat:</label>
+                      <p>{{ selectedMember.bodyFat ? (selectedMember.bodyFat + '%') : 'Not recorded' }}</p>
+                    </div>
+                  </div>
+                </div>
+                
+                <div class="info-section" *ngIf="selectedMember.fitnessGoals && selectedMember.fitnessGoals.length > 0">
+                  <h4><i class="fas fa-bullseye"></i> Fitness Goals</h4>
+                  <div class="tags-container">
+                    <span class="tag" *ngFor="let goal of selectedMember.fitnessGoals">{{ goal }}</span>
+                  </div>
+                </div>
+                
+                <div class="info-section" *ngIf="selectedMember.medicalConditions && selectedMember.medicalConditions.length > 0">
+                  <h4><i class="fas fa-notes-medical"></i> Medical Conditions</h4>
+                  <div class="tags-container">
+                    <span class="tag medical" *ngFor="let condition of selectedMember.medicalConditions">{{ condition }}</span>
+                  </div>
+                </div>
+              </div>
+              
+              <!-- Membership Tab Content -->
+              <div *ngIf="activeDetailTab === 'membership'">
+                <!-- Membership Details -->
+                <div class="info-section">
+                  <h4><i class="fas fa-id-card"></i> Membership Details</h4>
+                  <div class="info-grid">
+                    <div class="info-item">
+                      <label>Membership Type:</label>
+                      <p><span class="plan-badge small" [ngClass]="selectedMember.membership">{{ selectedMember.membership }}</span></p>
+                    </div>
+                    <div class="info-item">
+                      <label>Status:</label>
+                      <p><span class="status-badge small" [ngClass]="selectedMember.status">{{ selectedMember.status }}</span></p>
+                    </div>
+                    <div class="info-item">
+                      <label>Join Date:</label>
+                      <p>{{ selectedMember.joinDate | date:'longDate' }}</p>
+                    </div>
+                    <div class="info-item">
+                      <label>Expiry Date:</label>
+                      <p>{{ selectedMember.expiryDate | date:'longDate' }}</p>
+                    </div>
+                    <div class="info-item" *ngIf="selectedMember.paymentMethod">
+                      <label>Payment Method:</label>
+                      <p>{{ selectedMember.paymentMethod }}</p>
+                    </div>
+                  </div>
+                </div>
+                
+                <!-- Attendance -->
+                <div class="info-section">
+                <h4><i class="fas fa-calendar-check"></i> Attendance</h4>
+                <div class="info-grid">
+                  <div class="info-item">
+                    <label>Attendance Rate:</label>
+                    <p>{{ selectedMember.attendanceRate ? (selectedMember.attendanceRate + '%') : 'Not recorded' }}</p>
+                  </div>
+                  <div class="info-item">
+                    <label>Last Visit:</label>
+                    <p>{{ selectedMember.lastVisit ? (selectedMember.lastVisit | date:'longDate') : 'Never' }}</p>
+                  </div>
+                </div>
+              </div>
+              
+                <!-- Training -->
+                <div class="info-section" *ngIf="selectedMember.assignedTrainer || selectedMember.trainingProgram">
+                  <h4><i class="fas fa-dumbbell"></i> Training</h4>
+                  <div class="info-grid">
+                    <div class="info-item" *ngIf="selectedMember.assignedTrainer">
+                      <label>Assigned Trainer:</label>
+                      <p>{{ selectedMember.assignedTrainer }}</p>
+                    </div>
+                    <div class="info-item" *ngIf="selectedMember.trainingProgram">
+                      <label>Training Program:</label>
+                      <p>{{ selectedMember.trainingProgram }}</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              
+              <!-- Emergency Contact Tab Content -->
+              <div *ngIf="activeDetailTab === 'emergency' && selectedMember.emergencyContact">
+                <div class="info-section">
+                  <h4><i class="fas fa-phone-alt"></i> Emergency Contact</h4>
+                  <div class="info-grid">
+                    <div class="info-item">
+                      <label>Name:</label>
+                      <p>{{ selectedMember.emergencyContact.name }}</p>
+                    </div>
+                    <div class="info-item">
+                      <label>Phone:</label>
+                      <p>{{ selectedMember.emergencyContact.phone }}</p>
+                    </div>
+                    <div class="info-item">
+                      <label>Relationship:</label>
+                      <p>{{ selectedMember.emergencyContact.relationship }}</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              
+              <!-- Notes Tab Content -->
+              <div *ngIf="activeDetailTab === 'notes'">
+                <div class="info-section" *ngIf="selectedMember.notes || selectedMember.membershipNotes">
+                  <h4><i class="fas fa-sticky-note"></i> Notes</h4>
+                  <div class="notes-container">
+                    <p *ngIf="selectedMember.notes">{{ selectedMember.notes }}</p>
+                    <p *ngIf="selectedMember.membershipNotes">{{ selectedMember.membershipNotes }}</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <div class="modal-footer">
+        <button class="btn-outline" (click)="closeModal()">Close</button>
+        <button class="btn-primary" (click)="openEditMemberModal()">
+          <i class="fas fa-edit"></i> Edit Member
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Add Member Modal -->
+<div class="modal-overlay" *ngIf="showAddMemberModal" (click)="closeAddMemberModal()">
+  <!-- The click event on app-add-member won't bubble up to the overlay because of the preventClose method -->
+  <app-add-member (closeModal)="closeAddMemberModal()"></app-add-member>
+</div>
+
+<!-- Edit Member Modal -->
+<div class="modal-overlay" *ngIf="showEditMemberModal && selectedMember" (click)="closeEditMemberModal()">
+  <app-edit-member 
+    [member]="selectedMember!" 
+    (closeModal)="closeEditMemberModal()" 
+    (memberUpdated)="onMemberUpdated($event)">
+  </app-edit-member>
+</div>

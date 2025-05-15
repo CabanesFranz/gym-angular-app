@@ -1,0 +1,197 @@
+<div class="dashboard-container">
+  <div class="dashboard-header">
+    <h1>Dashboard</h1>
+    <div class="date-filter">
+      <span>Today: {{ currentDate | date:'fullDate' }}</span>
+    </div>
+  </div>
+
+  <div class="stats-overview">
+    <div class="stat-card">
+      <div class="stat-icon members">
+        <i class="fas fa-users"></i>
+      </div>
+      <div class="stat-content">
+        <h3>Total Members</h3>
+        <p class="stat-number">{{ totalMembers }}</p>
+        <p class="stat-change positive">+12% <span>from last month</span></p>
+      </div>
+    </div>
+
+    <div class="stat-card">
+      <div class="stat-icon attendance">
+        <i class="fas fa-clipboard-check"></i>
+      </div>
+      <div class="stat-content">
+        <h3>Today's Attendance</h3>
+        <p class="stat-number">42</p>
+        <p class="stat-change">+8 <span>from yesterday</span></p>
+      </div>
+    </div>
+
+    <div class="stat-card">
+      <div class="stat-icon revenue">
+        <i class="fas fa-dollar-sign"></i>
+      </div>
+      <div class="stat-content">
+        <h3>Monthly Revenue</h3>
+        <p class="stat-number">$12,450</p>
+        <p class="stat-change positive">+5% <span>from last month</span></p>
+      </div>
+    </div>
+
+    <div class="stat-card">
+      <div class="stat-icon classes">
+        <i class="fas fa-dumbbell"></i>
+      </div>
+      <div class="stat-content">
+        <h3>Active Classes</h3>
+        <p class="stat-number">15</p>
+        <p class="stat-change neutral">0% <span>from last month</span></p>
+      </div>
+    </div>
+  </div>
+
+  <div class="dashboard-grid">
+    <div class="dashboard-card attendance-chart">
+      <div class="card-header">
+        <h2>Weekly Attendance</h2>
+        <div class="card-actions">
+          <button class="btn-icon"><i class="fas fa-ellipsis-v"></i></button>
+        </div>
+      </div>
+      <div class="card-content">
+        <div class="chart-placeholder">
+          <div class="bar" style="height: 60%;" data-day="Mon"><span>60%</span></div>
+          <div class="bar" style="height: 75%;" data-day="Tue"><span>75%</span></div>
+          <div class="bar" style="height: 45%;" data-day="Wed"><span>45%</span></div>
+          <div class="bar" style="height: 90%;" data-day="Thu"><span>90%</span></div>
+          <div class="bar" style="height: 85%;" data-day="Fri"><span>85%</span></div>
+          <div class="bar" style="height: 40%;" data-day="Sat"><span>40%</span></div>
+          <div class="bar" style="height: 30%;" data-day="Sun"><span>30%</span></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="dashboard-card upcoming-classes">
+      <div class="card-header">
+        <h2>Today's Classes</h2>
+        <div class="card-actions">
+          <button class="btn-icon"><i class="fas fa-ellipsis-v"></i></button>
+        </div>
+      </div>
+      <div class="card-content">
+        <div class="class-item">
+          <div class="class-time">08:00 AM</div>
+          <div class="class-info">
+            <h4>Morning Yoga</h4>
+            <p>Instructor: Sarah Johnson</p>
+          </div>
+          <div class="class-status">
+            <span class="status-badge in-progress">In Progress</span>
+          </div>
+        </div>
+        <div class="class-item">
+          <div class="class-time">10:30 AM</div>
+          <div class="class-info">
+            <h4>HIIT Training</h4>
+            <p>Instructor: Mike Peterson</p>
+          </div>
+          <div class="class-status">
+            <span class="status-badge upcoming">Upcoming</span>
+          </div>
+        </div>
+        <div class="class-item">
+          <div class="class-time">04:00 PM</div>
+          <div class="class-info">
+            <h4>Spin Class</h4>
+            <p>Instructor: Emma Roberts</p>
+          </div>
+          <div class="class-status">
+            <span class="status-badge upcoming">Upcoming</span>
+          </div>
+        </div>
+        <div class="class-item">
+          <div class="class-time">06:30 PM</div>
+          <div class="class-info">
+            <h4>Strength Training</h4>
+            <p>Instructor: David Kim</p>
+          </div>
+          <div class="class-status">
+            <span class="status-badge upcoming">Upcoming</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="dashboard-card new-members">
+      <div class="card-header">
+        <h2>New Members</h2>
+        <div class="card-actions">
+          <button class="btn-primary add-member-btn" (click)="openAddMemberModal()">
+            <i class="fas fa-plus"></i> Add Member
+          </button>
+        </div>
+      </div>
+      <div class="card-content">
+        <div class="member-item" *ngFor="let member of newMembers">
+          <div class="member-avatar">
+            <div class="avatar-placeholder" *ngIf="!member.photoUrl">{{ member.initials }}</div>
+            <img *ngIf="member.photoUrl" [src]="member.photoUrl" [alt]="member.name">
+          </div>
+          <div class="member-info">
+            <h4>{{ member.name }}</h4>
+            <p>Joined: {{ member.joinDate | date:'mediumDate' }}</p>
+          </div>
+          <div class="member-plan">
+            <span class="plan-badge" [ngClass]="member.membership">{{ member.membership }}</span>
+          </div>
+        </div>
+        
+        <div class="empty-state" *ngIf="newMembers.length === 0">
+          <p>No new members yet</p>
+          <button class="btn-primary" (click)="openAddMemberModal()">
+            <i class="fas fa-plus"></i> Add Member
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div class="dashboard-card announcements">
+      <div class="card-header">
+        <h2>Announcements</h2>
+        <div class="card-actions">
+          <button class="btn-icon"><i class="fas fa-ellipsis-v"></i></button>
+        </div>
+      </div>
+      <div class="card-content">
+        <div class="announcement-item">
+          <div class="announcement-date">May 6</div>
+          <div class="announcement-content">
+            <h4>Memorial Day Schedule</h4>
+            <p>The gym will have reduced hours (8AM-6PM) on Memorial Day, May 27th.</p>
+          </div>
+        </div>
+        <div class="announcement-item">
+          <div class="announcement-date">May 4</div>
+          <div class="announcement-content">
+            <h4>New Yoga Class Added</h4>
+            <p>We've added a new Vinyasa Flow class on Tuesdays at 7PM starting next week.</p>
+          </div>
+        </div>
+        <div class="announcement-item">
+          <div class="announcement-date">May 1</div>
+          <div class="announcement-content">
+            <h4>Equipment Maintenance</h4>
+            <p>The weight room will be closed for maintenance on May 10th from 1PM-3PM.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Add Member Modal -->
+  <div class="modal-overlay" *ngIf="showAddMemberModal" (click)="closeAddMemberModal()">
+    <app-add-member (closeModal)="closeAddMemberModal()"></app-add-member>
+  </div>
+</div>
